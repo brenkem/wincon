@@ -270,12 +270,11 @@ int am2315_read_data(void *_am, float *temperature, float *humidity) {
 /**
  * Creates a AM2315 sensor object.
  *
- * @param i2c device address
  * @param i2c device file path
  * @return am2315 sensor
  */
-void *am2315_init(int address, const char* i2c_device_filepath) {
-	DEBUG("device: init using address %#x and i2cbus %s\n", address, i2c_device_filepath);
+void *am2315_init(const char* i2c_device_filepath) {
+	DEBUG("device: init using address %#x and i2cbus %s\n", AM_ADDRESS, i2c_device_filepath);
 
 	// setup am2315
 	void *_am = malloc(sizeof(am2315_t));
@@ -285,7 +284,7 @@ void *am2315_init(int address, const char* i2c_device_filepath) {
 	}
 
 	am2315_t *am = TO_AM(_am);
-	am->address = address;
+	am->address = AM_ADDRESS;
 
 	// setup i2c device path
 	am->i2c_device = (char*) malloc(strlen(i2c_device_filepath) * sizeof(char));

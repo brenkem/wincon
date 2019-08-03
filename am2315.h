@@ -6,7 +6,9 @@
  *
  */
 
-void *am2315_init(int address, const char* i2c_device_filepath);
+#define AM_ADDRESS	0x5c // i2c address of all am2315 sensors
+
+void *am2315_init(const char* i2c_device_filepath);
 
 void am2315_close(void *_am);
 
