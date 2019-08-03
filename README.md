@@ -1,6 +1,6 @@
 
-The weather control station is an embedded system with multiple sensors
-to climatize different locations.
+The windows control station is an embedded system with multiple sensors
+to climatize different locations according there temerature and humidity.
 
 
 ## SETUP
