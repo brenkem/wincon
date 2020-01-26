@@ -14,6 +14,16 @@ to climatize different locations according there temerature and humidity.
     ------
     am2315
 
+    gpios:
+    ======
+    Fensteransteuerungen:
+    ---------------------
+    gpio5	Gefriertruhenraum
+    gpio6	Kellerbüro
+    gpio13	Öltankraum
+    gpio19	Kartoffellager
+
+
 
 # set up OS
 - install rasbian

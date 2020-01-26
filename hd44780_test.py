@@ -4,15 +4,10 @@ import RPi.GPIO as GPIO
 
 # Zuordnung der GPIO Pins (ggf. anpassen)
 LCD_RS = 4
-#LCD_E  = 17
 LCD_E  = 23
-#LCD_DATA4 = 18
 LCD_DATA4 = 24
-#LCD_DATA5 = 22
 LCD_DATA5 = 25
-#LCD_DATA6 = 23
 LCD_DATA6 = 8
-#LCD_DATA7 = 24
 LCD_DATA7 = 7
 
 LCD_WIDTH = 16 		# Zeichen je Zeile
@@ -89,7 +84,7 @@ if __name__ == '__main__':
 
 
 	lcd_send_byte(LCD_LINE_1, LCD_CMD)
-	lcd_message("I44%  O23%  K75%")
+	lcd_message("I44%  A23%  K75%")
 	lcd_send_byte(LCD_LINE_2, LCD_CMD)
 	lcd_message("12'C  34'C  56'C")
 
