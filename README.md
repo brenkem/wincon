@@ -16,12 +16,13 @@ to climatize different locations according there temerature and humidity.
 
     gpios:
     ======
-    Fensteransteuerungen:
+    Fensteransteuerungen(0/offen, 1/zu):
     ---------------------
     gpio5	Gefriertruhenraum
     gpio6	Kellerbüro
     gpio13	Öltankraum
     gpio19	Kartoffellager
+
 
 
 
