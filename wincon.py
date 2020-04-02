@@ -253,12 +253,12 @@ while True:
 
     # print current data to display
     lcd_send_byte(LCD_LINE_1, LCD_CMD)
-    lcd_message("I%2d%%" % HI + "  A%2d%%" % HA +  "  K%2d%%" % HK)
+    lcd_message("A%2d%%" % HA + "  I%2d%%" % HI + "  K%2d%%" % HK)
     lcd_send_byte(LCD_LINE_2, LCD_CMD)
-    lcd_message("%2.1f" % TI + " %5.1f" % TA  + " %5.1f" % TK)
+    lcd_message("%4.1f" % TA + " %5.1f" % TI  + " %5.1f" % TK)
 
     # Auswertung der Fensteransteuerung
-    if (stat) and (V > 1.5) and (TI > 15) and (HA < 80) and ((TA < TI) or (TI < 18)):
+    if (stat) and (V > 1.5) and (TI > 19) and (HA < 80) and ((TA < TI) or (TI < 21)):
       open('/sys/class/gpio/gpio5/value', 'w').write("0") # open Gefrierraumfenster
       time.sleep(10)
       open('/sys/class/gpio/gpio6/value', 'w').write("0") # open Kellerbuerofenster
@@ -267,7 +267,7 @@ while True:
       time.sleep(10)
       open('/var/log/wincon.log', 'a').write(time.strftime("Kellerfenster geoeffnet:   %d.%m.%Y %H:%M\n"))
 
-    if (not stat) and ((V <= 1.3) or (TI <= 14) or (HA >= 85) or ((TA > TI) and (TI >= 20))):
+    if (not stat) and ((V <= 1.3) or (TI <= 18) or (HA >= 85) or ((TA > TI) and (TI >= 24))):
       open('/sys/class/gpio/gpio5/value', 'w').write("1") # close Gefrierraumfenster
       time.sleep(10)
       open('/sys/class/gpio/gpio6/value', 'w').write("1") # close Kellerbuerofenster
