@@ -209,16 +209,16 @@ while True:
     statK = int(open('/sys/class/gpio/gpio19/value', 'r').read())
 
     # save log
-    open('/run/shm/wetterstation_HK', 'w').write("%.1f" % HK)
-    open('/run/shm/wetterstation_TK', 'w').write("%.1f" % TK)
+    open('/dev/shm/wetterstation_HK', 'w').write("%.1f" % HK)
+    open('/dev/shm/wetterstation_TK', 'w').write("%.1f" % TK)
 
     # check clima and control window
     if (statK) and (HK >= 80) and (HA <= 90) and ( ((TK < 5) and (TA > (TK+1))) or ((TK > 8) and (TA < (TK-3))) ):
       open('/sys/class/gpio/gpio19/value', 'w').write("0") # open  Kartoffelkellerfenster
-      open('/var/log/wincon.log', 'a').write("Kartoffelkeller geoeffnet:" + time.strftime(" %d.%m.%Y %H:%M ") + "TK:%.1f, HK:%.1f; TA:%.1f, HA:%.1f\n" % (TK, HK, TA, HA))
+      open('/dev/shm/wincon.log', 'a').write("Kartoffelkeller geoeffnet:" + time.strftime(" %d.%m.%Y %H:%M ") + "TK:%.1f, HK:%.1f; TA:%.1f, HA:%.1f\n" % (TK, HK, TA, HA))
     if (not statK) and ( (HA > 95) or (HK < 70) or ((TK <= (TA + 0.5)) and (TK >= (TA - 0.5))) or ((TK > 6.5) and (TA > TK)) or ((TK < 6.5) and (TA < TK)) ):
       open('/sys/class/gpio/gpio19/value', 'w').write("1") # close Kartoffelkellerfenster
-      open('/var/log/wincon.log', 'a').write("Kartoffelkeller geschlossen:" + time.strftime(" %d.%m.%Y %H:%M ") + "TK:%.1f, HK:%.1f; TA:%.1f, HA:%.1f\n" % (TK, HK, TA, HA))
+      open('/dev/shm/wincon.log', 'a').write("Kartoffelkeller geschlossen:" + time.strftime(" %d.%m.%Y %H:%M ") + "TK:%.1f, HK:%.1f; TA:%.1f, HA:%.1f\n" % (TK, HK, TA, HA))
 
 
     ###################### Kellerlueftung ####################################
@@ -245,11 +245,11 @@ while True:
       print "V: %0.3f" % V
 
     # Zwischenspeichern der Temperatur- und Luftfeuchtigkeitswerte im SHM
-    open('/run/shm/wetterstation_HI', 'w').write("%0.1f" % HI)
-    open('/run/shm/wetterstation_HA', 'w').write("%0.1f" % HA)
-    open('/run/shm/wetterstation_TI', 'w').write("%0.1f" % TI)
-    open('/run/shm/wetterstation_TA', 'w').write("%0.1f" % TA)
-    open('/run/shm/wetterstation_V', 'w').write("%0.3f" % V)
+    open('/dev/shm/wetterstation_HI', 'w').write("%0.1f" % HI)
+    open('/dev/shm/wetterstation_HA', 'w').write("%0.1f" % HA)
+    open('/dev/shm/wetterstation_TI', 'w').write("%0.1f" % TI)
+    open('/dev/shm/wetterstation_TA', 'w').write("%0.1f" % TA)
+    open('/dev/shm/wetterstation_V', 'w').write("%0.3f" % V)
 
     # print current data to display
     lcd_send_byte(LCD_LINE_1, LCD_CMD)
@@ -265,7 +265,7 @@ while True:
       time.sleep(10)
       open('/sys/class/gpio/gpio13/value', 'w').write("0") # open Heizoelkellerfenster
       time.sleep(10)
-      open('/var/log/wincon.log', 'a').write(time.strftime("Kellerfenster geoeffnet:   %d.%m.%Y %H:%M\n"))
+      open('/dev/shm/wincon.log', 'a').write(time.strftime("Kellerfenster geoeffnet:   %d.%m.%Y %H:%M\n"))
 
     if (not stat) and ((V <= 1.3) or (TI <= 18) or (HA >= 85) or ((TA > TI) and (TI >= 24))):
       open('/sys/class/gpio/gpio5/value', 'w').write("1") # close Gefrierraumfenster
@@ -274,17 +274,17 @@ while True:
       time.sleep(10)
       open('/sys/class/gpio/gpio13/value', 'w').write("1") # close Heizoelkellerfenster
       time.sleep(10)
-      open('/var/log/wincon.log', 'a').write(time.strftime("Kellerfenster geschlossen: %d.%m.%Y %H:%M\n\n"))
+      open('/dev/shm/wincon.log', 'a').write(time.strftime("Kellerfenster geschlossen: %d.%m.%Y %H:%M\n\n"))
 
   # error
   elif crcA_check != 1:
-    open('/run/shm/wetterstation_TA', 'w').write("-0") # error code
-    open('/run/shm/wetterstation_HA', 'w').write("-0") # error code
+    open('/dev/shm/wetterstation_TA', 'w').write("-0") # error code
+    open('/dev/shm/wetterstation_HA', 'w').write("-0") # error code
   elif crcI_check != 1:
-    open('/run/shm/wetterstation_TI', 'w').write("-0") # error code
-    open('/run/shm/wetterstation_HI', 'w').write("-0") # error code
+    open('/dev/shm/wetterstation_TI', 'w').write("-0") # error code
+    open('/dev/shm/wetterstation_HI', 'w').write("-0") # error code
   elif validI_check != 1:
-    open('/run/shm/wetterstation_TK', 'w').write("-0") # error code
-    open('/run/shm/wetterstation_HK', 'w').write("-0") # error code
+    open('/dev/shm/wetterstation_TK', 'w').write("-0") # error code
+    open('/dev/shm/wetterstation_HK', 'w').write("-0") # error code
 
   time.sleep(60) # wait to check again
