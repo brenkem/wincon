@@ -6,7 +6,7 @@ import smbus
 import RPi.GPIO as GPIO
 from tentacle_pi.AM2315 import AM2315
 
-debug = 0
+debug = 1
 
 # Zuordnung der GPIO Pins (ggf. anpassen)
 LCD_RS = 4
@@ -204,6 +204,27 @@ while True:
       print "I= T: %0.1f" % TI,"H: %0.1f" % HI, "crc_ok: %s" % (validI_check == 1)
       print "K= T: %0.1f" % TK,"H: %0.1f" % HK, "crc_ok: %s" % (crcK_check == 1)
 
+
+    # prepare for humidity relation calculation
+    if (TA > 0):
+      aa = 7.5
+      ba = 237.3
+    else:
+      aa = 9.5
+      ba = 265.5
+
+    if (TK > 0):
+      ai = 7.5
+      bi = 237.3
+    else:
+      ai = 9.5
+      bi = 265.5
+
+    # Wassermengenverhaeltnis nach http://www.wetterochs.de/wetter/feuchte.html
+    VK  = ((10**(((ai*TK)/(bi+TI))-((aa*TA)/(ba+TA))))*HK*(TA+273.15))/(HA*(TK+273.15))
+    if debug == 1:
+      print "VK: %0.3f" % VK
+
     ################### control Kartoffelkeller ############################
     # Kaftoffelkellerfensterstatus: 0 wenn geoeffnet; 1 wenn geschlossen
     statK = int(open('/sys/class/gpio/gpio19/value', 'r').read())
@@ -213,18 +234,22 @@ while True:
     open('/dev/shm/wetterstation_TK', 'w').write("%.1f" % TK)
 
     # check clima and control window
-    if (statK) and (HK >= 80) and (HA <= 90) and ( ((TK < 5) and (TA > (TK+1))) or ((TK > 8) and (TA < (TK-3))) ):
+#    if (statK) and (HK >= 80) and (HA <= 90) and ( ((TK < 5) and (TA > (TK+1))) or ((TK > 8) and (TA < (TK-3))) ):
+    if (statK) and (VK > 1.3) and (HK >= 80) and ( ((TK < 6) and (TA > (TK + 5))) or ((TK > 8) and (TA < (TK - 5))) ):
+#    if (statK) and (VK > 1.2) and (HK >= 80): # and ( ((TK < 5) and (TA > (TK + 4))) or ((TK > 8) and (TA < (TK - 4))) ):
       open('/sys/class/gpio/gpio19/value', 'w').write("0") # open  Kartoffelkellerfenster
-      open('/dev/shm/wincon.log', 'a').write("Kartoffelkeller geoeffnet:" + time.strftime(" %d.%m.%Y %H:%M ") + "TK:%.1f, HK:%.1f; TA:%.1f, HA:%.1f\n" % (TK, HK, TA, HA))
-    if (not statK) and ( (HA > 95) or (HK < 70) or ((TK <= (TA + 0.5)) and (TK >= (TA - 0.5))) or ((TK > 6.5) and (TA > TK)) or ((TK < 6.5) and (TA < TK)) ):
+      open('/dev/shm/wincon.log', 'a').write("Kartoffelkeller geoeffnet:" + time.strftime(" %d.%m.%Y %H:%M ") + "TK:%.1f, HK:%.1f; TA:%.1f, HA:%.1f, VK:%.3f\n" % (TK, HK, TA, HA, VK))
+#    if (not statK) and ( (HA > 95) or (HK < 70) or ((TK <= (TA + 0.5)) and (TK >= (TA - 0.5))) or ((TK > 6.5) and (TA > TK)) or ((TK < 6.5) and (TA < TK)) ):
+    if (not statK) and ( (VK < 1.1) or (HK < 70) or ((TK <= (TA + 3)) and (TK >= (TA - 3))) or ((TK > 6.5) and (TA > TK)) or ((TK < 6.5) and (TA < TK)) ):
       open('/sys/class/gpio/gpio19/value', 'w').write("1") # close Kartoffelkellerfenster
-      open('/dev/shm/wincon.log', 'a').write("Kartoffelkeller geschlossen:" + time.strftime(" %d.%m.%Y %H:%M ") + "TK:%.1f, HK:%.1f; TA:%.1f, HA:%.1f\n" % (TK, HK, TA, HA))
+      open('/dev/shm/wincon.log', 'a').write("Kartoffelkeller geschlossen:" + time.strftime(" %d.%m.%Y %H:%M ") + "TK:%.1f, HK:%.1f; TA:%.1f, HA:%.1f, VK:%.3f\n" % (TK, HK, TA, HA, VK))
 
 
     ###################### Kellerlueftung ####################################
     # Fensterstatus: 0 bei geoeffnet und 1 bei geschlossen
     stat = int(open('/sys/class/gpio/gpio5/value', 'r').read())
 
+    # prepare for humidity relation calculation
     if (TA > 0):
       aa = 7.5
       ba = 237.3
@@ -258,7 +283,7 @@ while True:
     lcd_message("%4.1f" % TA + " %5.1f" % TI  + " %5.1f" % TK)
 
     # Auswertung der Fensteransteuerung
-    if (stat) and (V > 1.5) and (TI > 19) and (HA < 80) and ((TA < TI) or (TI < 21)):
+    if (statK) and (stat) and (V > 1.3) and (TI > 19) and (HA < 80) and ((TA < TI) or (TI < 21)):
       open('/sys/class/gpio/gpio5/value', 'w').write("0") # open Gefrierraumfenster
       time.sleep(10)
       open('/sys/class/gpio/gpio6/value', 'w').write("0") # open Kellerbuerofenster
@@ -267,7 +292,7 @@ while True:
       time.sleep(10)
       open('/dev/shm/wincon.log', 'a').write(time.strftime("Kellerfenster geoeffnet:   %d.%m.%Y %H:%M\n"))
 
-    if (not stat) and ((V <= 1.3) or (TI <= 18) or (HA >= 85) or ((TA > TI) and (TI >= 24))):
+    if (not statK) or ((not stat) and ((V <= 1.1) or (TI <= 18) or (HA >= 85) or ((TA > TI) and (TI >= 24)))):
       open('/sys/class/gpio/gpio5/value', 'w').write("1") # close Gefrierraumfenster
       time.sleep(10)
       open('/sys/class/gpio/gpio6/value', 'w').write("1") # close Kellerbuerofenster
