@@ -283,7 +283,8 @@ while True:
 
     # Auswertung der Fensteransteuerung
     # open windows
-    if (statK) and (stat) and (V > 1.3) and (TI > 19) and (HA < 80) and ((TA < TI) or (TI < 21)):
+    #if (statK) and (stat) and (V > 1.3) and (TI > 19) and (HA < 80) and ((TA < TI) or (TI < 21)):
+    if (statK) and (stat) and (V > 1.2) and (TI > 19) and (HA < 80) and ((TA < TI) or (TI < 21)):
       open('/sys/class/gpio/gpio5/value', 'w').write("0") # open Gefrierraumfenster
       time.sleep(15)
       open('/sys/class/gpio/gpio6/value', 'w').write("0") # open Kellerbuerofenster
