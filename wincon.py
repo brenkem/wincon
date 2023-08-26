@@ -200,9 +200,9 @@ while True:
   if crcA_check == 1 and crcK_check == 1 and validI_check == 1:
     if debug == 1:
       #Print result
-      print "A= T: %0.1f" % TA,"H: %0.1f" % HA, "crc_ok: %s" % (crcA_check == 1)
-      print "I= T: %0.1f" % TI,"H: %0.1f" % HI, "crc_ok: %s" % (validI_check == 1)
-      print "K= T: %0.1f" % TK,"H: %0.1f" % HK, "crc_ok: %s" % (crcK_check == 1)
+      print("A= T: %0.1f" % TA, "H: %0.1f" % HA, "crc_ok: %s" % (crcA_check == 1))
+      print("I= T: %0.1f" % TI, "H: %0.1f" % HI, "crc_ok: %s" % (validI_check == 1))
+      print("K= T: %0.1f" % TK, "H: %0.1f" % HK, "crc_ok: %s" % (crcK_check == 1))
 
 
     # prepare for humidity relation calculation
@@ -223,7 +223,7 @@ while True:
     # Wassermengenverhaeltnis nach http://www.wetterochs.de/wetter/feuchte.html
     VK  = ((10**(((ai*TK)/(bi+TI))-((aa*TA)/(ba+TA))))*HK*(TA+273.15))/(HA*(TK+273.15))
     if debug == 1:
-      print "VK: %0.3f" % VK
+      print("VK: %0.3f" % VK)
 
     ################### control Kartoffelkeller ############################
     # Kaftoffelkellerfensterstatus: 0 wenn geoeffnet; 1 wenn geschlossen
@@ -266,7 +266,7 @@ while True:
     # Wassermengenverhaeltnis nach http://www.wetterochs.de/wetter/feuchte.html
     V  = ((10**(((ai*TI)/(bi+TI))-((aa*TA)/(ba+TA))))*HI*(TA+273.15))/(HA*(TI+273.15))
     if debug == 1:
-      print "V: %0.3f" % V
+      print("V: %0.3f" % V)
 
     # Zwischenspeichern der Temperatur- und Luftfeuchtigkeitswerte im SHM
     open('/dev/shm/wetterstation_HI', 'w').write("%0.1f" % HI)

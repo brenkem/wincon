@@ -3,7 +3,7 @@ Description=Window control station service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python /usr/sbin/wincon
+ExecStart=/usr/bin/python3 /usr/sbin/wincon
 TimeoutSec=30
 Restart=on-failure
 

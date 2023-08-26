@@ -47,4 +47,4 @@ TI = 165.0*temp/(2**14)-40
 
 #Print result
 #print "H =",HI,"T =",TI
-print "T: %0.1f" % TI,"H: %0.1f" % HI
+print("T: %0.1f" % TI,"H: %0.1f" % HI)
